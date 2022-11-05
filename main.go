@@ -1,10 +1,23 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 )
+
+type Movie struct {
+	Title       string `json:"Title"`
+	Desc        string `json:"Desc"`
+	ReleaseYear int    `json:"ReleaseYear"`
+}
+
+// Global Movies array. Can populate in the `main` function to simulate a db
+var MovieList []Movie
+
+const allAtOnceDesc = "When an interdimensional rupture unravels reality, an unlikely hero must channel her newfound powers to fight bizarre and bewildering dangers from the multiverse as the fate of the world hangs in the balance."
+const troopersDesc = "Five Vermont state troopers, avid pranksters with a knack for screwing up, try to save their jobs and out-do the local police department by solving a crime."
 
 // Handles requests to the root URL.
 func homePage(w http.ResponseWriter, r *http.Request) {
@@ -18,10 +31,22 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 // Matches the URL path hit with a defined function
 func handleRequests() {
 	http.HandleFunc("/", homePage)
+	// Add "/movies" endpoint & map it to the getMovieList ƒn
+	http.HandleFunc("/movies", getMovieList)
 	log.Fatal(http.ListenAndServe(":10000", nil))
 }
 
 // Obvi most important ƒn ✨
 func main() {
+	MovieList = []Movie{
+		{Title: "Everything Everywhere All at Once", Desc: allAtOnceDesc, ReleaseYear: 2022},
+		{Title: "Super Troopers", Desc: troopersDesc, ReleaseYear: 2001},
+	}
 	handleRequests()
+}
+
+func getMovieList(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint hit: getMovieList")
+	// Encodes the movies into a JSON string
+	json.NewEncoder(w).Encode(MovieList)
 }
