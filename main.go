@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 
@@ -42,8 +43,10 @@ func handleRequests() {
 	myRouter.HandleFunc("/", homePage)
 	// Add "/movies" endpoint & map it to the getMovieList ƒn
 	myRouter.HandleFunc("/movies", getMovieList)
+	// NOTE: Order matters. Must be before the other "/movie" endpoint
+	myRouter.HandleFunc("/movie", addMovie).Methods("POST")
 	// {id} = path variable
-	myRouter.HandleFunc("/movies/{id}", getMovie)
+	myRouter.HandleFunc("/movie/{id}", getMovie)
 
 	log.Fatal(http.ListenAndServe(":10000", myRouter))
 }
@@ -66,7 +69,7 @@ func getMovieList(w http.ResponseWriter, r *http.Request) {
 }
 
 func getMovie(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint hit. /movies/{id}")
+	fmt.Println("Endpoint hit. /movie/{id}")
 
 	routeVariables := mux.Vars(r)
 	key := routeVariables["id"]
@@ -78,4 +81,13 @@ func getMovie(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(movie)
 		}
 	}
+}
+
+// the "C" of CRUD
+func addMovie(w http.ResponseWriter, r *http.Request) {
+	postBody, _ := io.ReadAll(r.Body)
+
+	// %+v   value in a default format, with field name.
+	// use when printing structs
+	fmt.Fprintf(w, "%+v", string(postBody))
 }
