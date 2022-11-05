@@ -3,9 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 // Using the gorilla/mux 3rd party router package instead of the standard library
@@ -13,6 +14,7 @@ import (
 // or query params.
 
 type Movie struct {
+	Id          string `json:"Id"`
 	Title       string `json:"Title"`
 	Desc        string `json:"Desc"`
 	ReleaseYear int    `json:"ReleaseYear"`
@@ -40,6 +42,9 @@ func handleRequests() {
 	myRouter.HandleFunc("/", homePage)
 	// Add "/movies" endpoint & map it to the getMovieList ƒn
 	myRouter.HandleFunc("/movies", getMovieList)
+	// {id} = path variable
+	myRouter.HandleFunc("/movies/{id}", getMovie)
+
 	log.Fatal(http.ListenAndServe(":10000", myRouter))
 }
 
@@ -48,14 +53,29 @@ func main() {
 	// Will execute when you `go run` this file
 	fmt.Println("Mux Routers 🦊")
 	MovieList = []Movie{
-		{Title: "Everything Everywhere All at Once", Desc: allAtOnceDesc, ReleaseYear: 2022},
-		{Title: "Super Troopers", Desc: troopersDesc, ReleaseYear: 2001},
+		{Id: "1", Title: "Everything Everywhere All at Once", Desc: allAtOnceDesc, ReleaseYear: 2022},
+		{Id: "2", Title: "Super Troopers", Desc: troopersDesc, ReleaseYear: 2001},
 	}
 	handleRequests()
 }
 
 func getMovieList(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint hit: getMovieList")
+	fmt.Println("Endpoint hit: /movies")
 	// Encodes the movies into a JSON string
 	json.NewEncoder(w).Encode(MovieList)
+}
+
+func getMovie(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint hit. /movies/{id}")
+
+	routeVariables := mux.Vars(r)
+	key := routeVariables["id"]
+
+	// Loop over moviesList
+	for _, movie := range MovieList {
+		if movie.Id == key {
+			// Return the movie encoded as JSON
+			json.NewEncoder(w).Encode(movie)
+		}
+	}
 }
