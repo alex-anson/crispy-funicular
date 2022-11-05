@@ -3,9 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
+
+// Using the gorilla/mux 3rd party router package instead of the standard library
+// net/http router. Allows you to more easily perform tasks such as parsing path
+// or query params.
 
 type Movie struct {
 	Title       string `json:"Title"`
@@ -30,14 +35,18 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 
 // Matches the URL path hit with a defined function
 func handleRequests() {
-	http.HandleFunc("/", homePage)
+	// Create a new instance of a mux router
+	myRouter := mux.NewRouter().StrictSlash(true)
+	myRouter.HandleFunc("/", homePage)
 	// Add "/movies" endpoint & map it to the getMovieList ƒn
-	http.HandleFunc("/movies", getMovieList)
-	log.Fatal(http.ListenAndServe(":10000", nil))
+	myRouter.HandleFunc("/movies", getMovieList)
+	log.Fatal(http.ListenAndServe(":10000", myRouter))
 }
 
 // Obvi most important ƒn ✨
 func main() {
+	// Will execute when you `go run` this file
+	fmt.Println("Mux Routers 🦊")
 	MovieList = []Movie{
 		{Title: "Everything Everywhere All at Once", Desc: allAtOnceDesc, ReleaseYear: 2022},
 		{Title: "Super Troopers", Desc: troopersDesc, ReleaseYear: 2001},
