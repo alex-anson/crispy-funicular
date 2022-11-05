@@ -69,12 +69,12 @@ func getMovieList(w http.ResponseWriter, r *http.Request) {
 }
 
 func getMovie(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint hit. /movie/{id}")
+	fmt.Println("Endpoint hit: /movie/{id}")
 
 	routeVariables := mux.Vars(r)
 	key := routeVariables["id"]
 
-	// Loop over moviesList
+	// Loop over MovieList
 	for _, movie := range MovieList {
 		if movie.Id == key {
 			// Return the movie encoded as JSON
@@ -84,10 +84,26 @@ func getMovie(w http.ResponseWriter, r *http.Request) {
 }
 
 // the "C" of CRUD
+// ... doesn't take validation into consideration.
 func addMovie(w http.ResponseWriter, r *http.Request) {
-	postBody, _ := io.ReadAll(r.Body)
+	postBody, err := io.ReadAll(r.Body)
 
-	// %+v   value in a default format, with field name.
+	if err != nil {
+		fmt.Println(err.Error(), "\nproblem reading request body")
+		return
+	}
+	// Unmarshal the request body JSON into a new `Movie` struct.
+	var movie Movie
+	err = json.Unmarshal(postBody, &movie)
+
+	if err != nil {
+		fmt.Println(err.Error(), "\nproblem unmarshalling")
+	}
+
+	// Update the global MovieList to include the new movie.
+	MovieList = append(MovieList, movie)
+
+	// %+v  -> value in a default format, with field name.
 	// use when printing structs
 	fmt.Fprintf(w, "%+v", string(postBody))
 }
