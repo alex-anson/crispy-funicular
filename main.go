@@ -44,6 +44,7 @@ func registerHandlers() {
 	myRouter.HandleFunc("/movie", addMovie).Methods("POST")
 	// Order still matters.
 	myRouter.HandleFunc("/movie/{id}", deleteMovie).Methods("DELETE")
+	myRouter.HandleFunc("/movie/{id}", updateMovie).Methods("PUT")
 	// {id} = path variable
 	myRouter.HandleFunc("/movie/{id}", getMovie)
 
@@ -133,4 +134,44 @@ func deleteMovie(w http.ResponseWriter, r *http.Request) {
 			MovieList = append(MovieList[:index], MovieList[index+1:]...)
 		}
 	}
+}
+
+// the "U" of CRUD
+func updateMovie(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint hit (PUT request received): /movie/{id}")
+
+	// Extract the id from the route
+	routeVariables := mux.Vars(r)
+	updateId := routeVariables["id"]
+
+	// Get the request body
+	putBody, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		fmt.Println(err.Error(), "\nproblem reading request body")
+		return
+	}
+
+	// Unmarshal the request body JSON into a new `Movie` struct.
+	var movie Movie
+	err = json.Unmarshal(putBody, &movie)
+
+	if err != nil {
+		fmt.Println(err.Error(), "\nproblem unmarshalling")
+	}
+
+	for index, xmovie := range MovieList {
+		if xmovie.Id == updateId {
+			// Remove the movie we're trying to update
+			MovieList = append(MovieList[:index], MovieList[index+1:]...)
+
+			// Manually construct the movie because I don't know how else to do it
+			updatedMovie := Movie{Id: updateId, Title: movie.Title, Desc: movie.Desc, ReleaseYear: movie.ReleaseYear}
+
+			// Update the global MovieList to include the "new" (updated) movie.
+			MovieList = append(MovieList, updatedMovie)
+		}
+	}
+
+	fmt.Fprintf(w, "%+v", string(putBody))
 }

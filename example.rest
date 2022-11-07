@@ -12,3 +12,14 @@ content-type: application/json
 
 DELETE http://localhost:10000/movie/1 HTTP/1.1
 content-type: application/json
+
+###
+
+PUT http://localhost:10000/movie/2 HTTP/1.1
+content-type: application/json
+
+{
+    "Title": "replace super troopers, i guess",
+    "Desc": "a movie that isn't as good. MEOW",
+    "ReleaseYear": 2012
+}
