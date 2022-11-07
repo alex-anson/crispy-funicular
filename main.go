@@ -58,6 +58,7 @@ func main() {
 	MovieList = []Movie{
 		{Id: "1", Title: "Everything Everywhere All at Once", Desc: allAtOnceDesc, ReleaseYear: 2022},
 		{Id: "2", Title: "Super Troopers", Desc: troopersDesc, ReleaseYear: 2001},
+		{Id: "3", Title: "3rd title", Desc: "Another movie", ReleaseYear: 1998},
 	}
 	registerHandlers()
 }
@@ -162,14 +163,16 @@ func updateMovie(w http.ResponseWriter, r *http.Request) {
 
 	for index, xmovie := range MovieList {
 		if xmovie.Id == updateId {
-			// Remove the movie we're trying to update
-			MovieList = append(MovieList[:index], MovieList[index+1:]...)
+			// Overwrite the existing values
+			xmovie.Title = movie.Title
+			xmovie.Desc = movie.Desc
+			xmovie.ReleaseYear = movie.ReleaseYear
 
-			// Manually construct the movie because I don't know how else to do it
-			updatedMovie := Movie{Id: updateId, Title: movie.Title, Desc: movie.Desc, ReleaseYear: movie.ReleaseYear}
+			// Store all movies before the found index, plus the updated movie.
+			temporaryList := append(MovieList[:index], xmovie)
 
-			// Update the global MovieList to include the "new" (updated) movie.
-			MovieList = append(MovieList, updatedMovie)
+			// Update the global MovieList with the updated movie.
+			MovieList = append(temporaryList, MovieList[index+1:]...)
 		}
 	}
 
