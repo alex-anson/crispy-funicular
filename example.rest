@@ -1,4 +1,4 @@
-POST http://localhost:10000/movie HTTP/1.1
+POST http://localhost:3000/movie HTTP/1.1
 content-type: application/json
 
 {
@@ -10,12 +10,12 @@ content-type: application/json
 
 ###
 
-DELETE http://localhost:10000/movie/1 HTTP/1.1
+DELETE http://localhost:3000/movie/1 HTTP/1.1
 content-type: application/json
 
 ###
 
-PUT http://localhost:10000/movie/2 HTTP/1.1
+PUT http://localhost:3000/movie/2 HTTP/1.1
 content-type: application/json
 
 {
