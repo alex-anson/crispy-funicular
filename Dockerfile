@@ -1,15 +1,14 @@
 FROM golang:1.19-buster
 
-# Not ideal. 0 means root. if this were meant for prod, and there was an exploit, they'd be root (... no idea what i'm talking about)
-# Tried to use 1212, didn't know how to get around the permission denied error - failed to initialize build cache at /.cache/go-build: mkdir /.cache: permission denied
-USER 0
+# Adds an entry to `etc/passwd` inside the image's filesystem space, among other things.
+# "alex" will own all installed files.
+RUN useradd -ms /bin/bash alex
 
 # Working directory INSIDE the container.
-WORKDIR /home/go/code
+WORKDIR /home/alex/code
 
 # Transfers files from outside to inside container.
-# Eeeeekk root.
-COPY --chown=0:golang . .
+COPY --chown=alex:golang . .
 
 CMD [ "go", "run", "src/main.go" ]
 
