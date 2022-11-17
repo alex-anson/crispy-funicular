@@ -3,6 +3,10 @@
 services:
   goapi:
     image: goapi
+    volumes:
+      - type: bind
+        source: /Users/alexan/Desktop/repos/scratch/go-api/my-bind-mnt/data.json
+        target: /home/alex/code/data.json
     build:
       context: .
       dockerfile: ./Dockerfile
