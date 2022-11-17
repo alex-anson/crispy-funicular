@@ -12,6 +12,15 @@ WORKDIR /home/alex/code
 # COPY --chown=<user>:<group> <hostPath> <containerPath>
 COPY --chown=alex:alex . .
 
+# Created .dockerignore & added go.mod & go.sum to it. Docker won't copy over either 
+# of these files now. (...and I deleted them from my local machine)
+# Create the go.mod file
+RUN go mod init main
+# Add necessary dependencies
+RUN go get github.com/gorilla/mux@v1.8.0
+# Make sure go.mod matches the source code in the module.
+RUN go mod tidy
+
 CMD [ "go", "run", "src/main.go" ]
 # CMD [ "ls", "-lah" ]
 
