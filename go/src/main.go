@@ -55,6 +55,8 @@ func registerHandlers() {
 func main() {
 	// Will execute when you `go run` this file
 	fmt.Println("Mux Routers 🦊")
+	// Print contents of a json file
+	ReadJsonFile()
 	MovieList = []Movie{
 		{Id: "1", Title: "Everything Everywhere All at Once", Desc: allAtOnceDesc, ReleaseYear: 2022},
 		{Id: "2", Title: "Super Troopers", Desc: troopersDesc, ReleaseYear: 2001},
