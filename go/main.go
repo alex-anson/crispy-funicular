@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	// "os"
 
 	// Using the gorilla/mux 3rd party router package instead of the standard library
 	// net/http router. Allows you to more easily perform tasks such as parsing path
@@ -55,8 +56,13 @@ func registerHandlers() {
 func main() {
 	// Will execute when you `go run` this file
 	fmt.Println("Mux Routers 🦊")
-	// Print contents of a json file
+
+	// Get an environment variable in Go.
+	// if os.Getenv("CONTAINER") == "true" {
+	// 	// Print contents of a json file
 	ReadJsonFile()
+	// }
+
 	MovieList = []Movie{
 		{Id: "1", Title: "Everything Everywhere All at Once", Desc: allAtOnceDesc, ReleaseYear: 2022},
 		{Id: "2", Title: "Super Troopers", Desc: troopersDesc, ReleaseYear: 2001},
